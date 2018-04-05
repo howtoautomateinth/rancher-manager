@@ -8,8 +8,7 @@ def main(argv):
 
 	rc_factory = RancherFactory(argv[0], rancher_server_list)
 	rc = rc_factory.factory()
-	rc.get_service_config()
-	rc.get_request()
+	rc.upgrade()
 
 if __name__ == "__main__":
 	main(sys.argv[1:])
