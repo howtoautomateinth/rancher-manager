@@ -11,6 +11,7 @@ Have to change 3 configuration which is
 - rancher_list_to_yaml.yaml (list of rancher that would like to generate to yaml)
 - rancher_service_to_update.yaml (list of rancher services that would like to upgrade)
 - rancher_request.py (for setting secret key and rancher server)
+
 then run
 
 ```python rancher_manager.py UPGRADE```
