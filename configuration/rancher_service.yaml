@@ -1,7 +1,0 @@
-service_list:
-  - service_id: 123
-    environment: 1a10
-    name: 'node-example-1'
-  - service_id: 123
-    environment: 1a10
-    name: 'node-example-2'

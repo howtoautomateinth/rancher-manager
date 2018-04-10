@@ -1,0 +1,4 @@
+service_list:
+  - service_id: 1s206
+    environment: 1a10
+    name: 'example-node'

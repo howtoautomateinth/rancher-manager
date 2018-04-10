@@ -1,0 +1,7 @@
+service_list:
+  - service_id: 1s206
+    environment: 1a10
+    name: 'example_logic_service'
+  - service_id: 1s178
+    environment: 1a10
+    name: 'example_data_service'

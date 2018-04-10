@@ -16,9 +16,9 @@ class RancherUpgrade(BaseRequest):
 		print('Getting service configuration')
 		for data in self.config:
 			r = requests.get('{0}:{1}/{2}/projects/{3}/services/{4}'.format(
-					self.RC_HOST, self.RC_PORT,self.RC_API_VERSION, 
+					BaseRequest.RC_HOST, BaseRequest.RC_PORT,BaseRequest.RC_API_VERSION, 
 					data.environment, data.service_id),
-					auth=(self.RC_ACCESS_KEY,self.RC_SECRET_KEY))
+					auth=(BaseRequest.RC_ACCESS_KEY,BaseRequest.RC_SECRET_KEY))
 			self.launchConfig = r.json()['launchConfig']
 			self.__upgrade_services(data.environment, data.service_id)
 
@@ -33,32 +33,39 @@ class RancherUpgrade(BaseRequest):
 			}
 		}
 		r = requests.post('{0}:{1}/{2}/projects/{3}/services/{4}/?action=upgrade'.format(
-				self.RC_HOST, self.RC_PORT,self.RC_API_VERSION, 
+				BaseRequest.RC_HOST, BaseRequest.RC_PORT,BaseRequest.RC_API_VERSION, 
 				environment,service_id),
-				data = json.dumps(payload), headers = self.HEADERS,
-				auth=(self.RC_ACCESS_KEY,self.RC_SECRET_KEY))
-		self.__check_state(environment,service_id)
+				data = json.dumps(payload), headers = BaseRequest.HEADERS,
+				auth=(BaseRequest.RC_ACCESS_KEY,BaseRequest.RC_SECRET_KEY))
+		self.__confirm_upgrade_services(environment,service_id)
 
-	def __check_state(self,environment,service_id):
+	def __confirm_upgrade_services(self,environment,service_id):
 		print('Check service state')
-		state = 'upgrading'
-		retry = 10
-		sleep = 30
-
-		while (state != 'upgraded'):
-			time.sleep(sleep)
-			r = requests.get('{0}:{1}/{2}/projects/{3}/services/{4}'.format(
-					self.RC_HOST, self.RC_PORT,self.RC_API_VERSION, 
-					environment, service_id),
-					auth=(self.RC_ACCESS_KEY,self.RC_SECRET_KEY))
-			state = r.json()['state']
-			retry -= 1
-			print('Current State "{}" and retry count "{}"'.format(state,retry))
-			if (retry <= 0): break
+		self.__wait_to_finish('upgraded',environment,service_id)
 
 		print('Posting "finishupgrade" to Rancher Server')
 		r = requests.post('{0}:{1}/{2}/projects/{3}/services/{4}/?action=finishupgrade'.format(
-				self.RC_HOST, self.RC_PORT,self.RC_API_VERSION, 
+				BaseRequest.RC_HOST, BaseRequest.RC_PORT,BaseRequest.RC_API_VERSION, 
 				environment,service_id),
-				auth=(self.RC_ACCESS_KEY,self.RC_SECRET_KEY))
+				auth=(BaseRequest.RC_ACCESS_KEY,BaseRequest.RC_SECRET_KEY))
+
+		self.__wait_to_finish('active',environment,service_id)
+
+	def __wait_to_finish(self,status,environment,service_id):
+		state = ''
+		retry = 10
+		sleep = 30
+		while (state != status):
+			r = requests.get('{0}:{1}/{2}/projects/{3}/services/{4}'.format(
+					BaseRequest.RC_HOST, BaseRequest.RC_PORT,BaseRequest.RC_API_VERSION, 
+					environment, service_id),
+					auth=(BaseRequest.RC_ACCESS_KEY,BaseRequest.RC_SECRET_KEY))
+			state = r.json()['state']
+			retry -= 1
+			if(state == status): 
+				break 
+			else:
+				time.sleep(sleep)
+			print('Current State "{}" and retry count "{}"'.format(state,retry))
+			if (retry <= 0): break
 

@@ -4,8 +4,8 @@ class BaseRequest(object):
 	RC_ACCESS_KEY = 'XXX'
 	RC_SECRET_KEY = 'XXX'
 	HEADERS = {'content-type':'application/json'}
-	RC_HOST = 'http://XX-XX-XXXX'
-	RC_PORT = 'XXXX'
+	RC_HOST = 'http://XXX'
+	RC_PORT = '8080'
 	RC_API_VERSION = 'v2-beta'
 
 	def get_request(self):
